@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Une question importante...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plum-950:#1b0f24;
+    --plum-900:#2a1533;
+    --plum-800:#3c1e46;
+    --rose-500:#e0508a;
+    --rose-400:#f0729f;
+    --gold-300:#f3c98b;
+    --cream:#fff3e6;
+    --glow:#ff8fb8;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    font-family:'Poppins',sans-serif;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,143,184,0.25), transparent 45%),
+      radial-gradient(circle at 80% 70%, rgba(243,201,139,0.18), transparent 50%),
+      linear-gradient(160deg, var(--plum-950), var(--plum-900) 55%, var(--plum-800));
+    color: var(--cream);
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+  .hearts{
+    position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
+  }
+  .hearts span{
+    position:absolute; bottom:-10%; font-size:1.2rem; opacity:0.35;
+    animation: floatUp linear infinite;
+    color: var(--rose-400);
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) rotate(0deg); opacity:0;}
+    10%{opacity:0.5;}
+    90%{opacity:0.35;}
+    100%{ transform: translateY(-110vh) rotate(360deg); opacity:0;}
+  }
+  .stage{
+    position:relative; z-index:1;
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding: 24px;
+  }
+  .card{
+    width:100%; max-width:560px;
+    background: rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.14);
+    backdrop-filter: blur(14px);
+    border-radius: 28px;
+    padding: 48px 40px;
+    text-align:center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    animation: cardIn 0.6s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @keyframes cardIn{
+    from{ opacity:0; transform: translateY(24px) scale(0.97);}
+    to{ opacity:1; transform: translateY(0) scale(1);}
+  }
+  .eyebrow{
+    font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase;
+    color: var(--gold-300); margin-bottom:14px; font-weight:600;
+  }
+  h1{
+    font-family:'Pacifico', cursive;
+    font-weight:400;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    line-height:1.35;
+    margin: 0 0 30px 0;
+    color: var(--cream);
+    text-shadow: 0 2px 20px rgba(255,143,184,0.35);
+  }
+  p.sub{
+    font-size:0.95rem; color: rgba(255,243,230,0.75); margin-top:-14px; margin-bottom:28px;
+  }
+  .btn{
+    font-family:'Poppins',sans-serif;
+    font-weight:600;
+    font-size:1rem;
+    padding: 14px 32px;
+    border-radius: 999px;
+    border:none;
+    cursor:pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:active{ transform: scale(0.96); }
+  .btn-yes{
+    background: linear-gradient(135deg, var(--rose-500), var(--gold-300));
+    color: #2a1533;
+    box-shadow: 0 10px 30px rgba(224,80,138,0.45);
+  }
+  .btn-yes:hover{ transform: translateY(-2px); box-shadow: 0 14px 34px rgba(224,80,138,0.55); }
+  .btn-no{
+    background: rgba(255,255,255,0.1);
+    color: var(--cream);
+    border:1px solid rgba(255,255,255,0.25);
+  }
+  .choice-row{
+    display:flex; gap:18px; justify-content:center; flex-wrap:wrap;
+    position:relative; min-height:70px;
+  }
+  #btnNo.fleeing{
+    position:fixed;
+    z-index:50;
+    transition: top 0.28s ease, left 0.28s ease;
+  }
+  .yes-grow{
+    animation: pulseGrow 0.4s ease forwards;
+  }
+  @keyframes pulseGrow{
+    to{ transform: scale(1.12); }
+  }
+  .field{
+    text-align:left; margin-bottom:20px;
+  }
+  .field label{
+    display:block; font-size:0.8rem; color: var(--gold-300);
+    margin-bottom:8px; font-weight:600; letter-spacing:0.03em;
+  }
+  select, input[type="text"], input[type="date"], input[type="time"]{
+    width:100%;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08);
+    color: var(--cream);
+    font-family:'Poppins',sans-serif;
+    font-size:0.95rem;
+    outline:none;
+  }
+  select option{ color:#1b0f24; }
+  select:focus, input:focus{
+    border-color: var(--rose-400);
+    box-shadow: 0 0 0 3px rgba(224,80,138,0.25);
+  }
+  .autre-wrap{ margin-top:10px; display:none; }
+  .autre-wrap.show{ display:block; }
+  .validate-row{ margin-top:8px; }
+  .step{ display:none; }
+  .step.active{ display:block; }
+  .emoji-big{ font-size:2.4rem; margin-bottom:6px; display:block; }
+  .recap-text{
+    font-size:1.15rem; line-height:1.7; color: var(--cream);
+    background: rgba(255,255,255,0.06);
+    border-radius:18px; padding:26px 22px; margin-top: 10px;
+    border:1px dashed rgba(243,201,139,0.4);
+  }
+  .recap-text b{ color: var(--gold-300); }
+  .counter{
+    font-size:0.8rem; color: rgba(255,243,230,0.55); margin-top:18px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hearts span{ animation: none; display:none; }
+    .card{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<div class="stage">
+  <div class="card" id="card">
+
+    <!-- STEP 0 : la question -->
+    <div class="step active" id="step0">
+      <div class="eyebrow">Question importante</div>
+      <h1>T'es partante pour un date avec moi&nbsp;? 💌</h1>
+      <div class="choice-row">
+        <button class="btn btn-yes" id="btnYes" onclick="sayYes()">Oui</button>
+        <button class="btn btn-no" id="btnNo" onclick="fleeNo()">Non</button>
+      </div>
+      <div class="counter" id="noCounter"></div>
+    </div>
+
+    <!-- STEP 1 : activité -->
+    <div class="step" id="step1">
+      <div class="eyebrow">Étape 1 / 3</div>
+      <h1>Très bon choix 🥰<br>Tu veux aller où, mon choubidou&nbsp;?</h1>
+      <div class="field">
+        <label for="activiteSelect">Choisis une idée de date</label>
+        <select id="activiteSelect" onchange="toggleAutre('activite')">
+          <option value="">— Sélectionne une idée —</option>
+          <option value="Balade romantique au coucher du soleil">🌅 Balade romantique au coucher du soleil</option>
+          <option value="Cinéma">🎬 Cinéma</option>
+          <option value="Restaurant en amoureux">🍽️ Restaurant en amoureux</option>
+          <option value="Pique-nique dans un parc">🧺 Pique-nique dans un parc</option>
+          <option value="Escape game">🔐 Escape game</option>
+          <option value="Bowling">🎳 Bowling</option>
+          <option value="Visite d'un musée ou expo">🖼️ Visite d'un musée ou expo</option>
+          <option value="Soirée jeux de société">🎲 Soirée jeux de société</option>
+          <option value="autre">✨ Autre idée (à préciser)</option>
+        </select>
+        <div class="autre-wrap" id="activiteAutreWrap">
+          <input type="text" id="activiteAutre" placeholder="Dis-moi ton idée...">
+        </div>
+      </div>
+      <div class="validate-row">
+        <button class="btn btn-yes" onclick="validateStep1()">Valider</button>
+      </div>
+    </div>
+
+    <!-- STEP 2 : date & heure -->
+    <div class="step" id="step2">
+      <div class="eyebrow">Étape 2 / 3</div>
+      <h1>Et à quelle heure ? ⏰</h1>
+      <div class="field">
+        <label for="dateInput">Le jour du rendez-vous</label>
+        <input type="date" id="dateInput">
+      </div>
+      <div class="field">
+        <label for="heureInput">L'heure du rendez-vous</label>
+        <input type="time" id="heureInput">
+      </div>
+      <div class="validate-row">
+        <button class="btn btn-yes" onclick="validateStep2()">Valider</button>
+      </div>
+    </div>
+
+    <!-- STEP 3 : plat -->
+    <div class="step" id="step3">
+      <div class="eyebrow">Étape 3 / 3</div>
+      <h1>Et enfin, tu veux manger quoi ? 😋<br><span style="font-size:0.7em; opacity:0.85;">Je t'invite !</span></h1>
+      <div class="field">
+        <label for="platSelect">Choisis un plat</label>
+        <select id="platSelect" onchange="toggleAutre('plat')">
+          <option value="">— Sélectionne un plat —</option>
+          <option value="Pizza">🍕 Pizza</option>
+          <option value="Sushi">🍣 Sushi</option>
+          <option value="Burger">🍔 Burger</option>
+          <option value="Pâtes italiennes">🍝 Pâtes italiennes</option>
+          <option value="Cuisine japonaise">🍜 Cuisine japonaise (ramen, etc.)</option>
+          <option value="Tacos / Mexicain">🌮 Tacos / Mexicain</option>
+          <option value="Cuisine libanaise">🥙 Cuisine libanaise</option>
+          <option value="Crêpes">🥞 Crêpes</option>
+          <option value="autre">✨ Autre envie (à préciser)</option>
+        </select>
+        <div class="autre-wrap" id="platAutreWrap">
+          <input type="text" id="platAutre" placeholder="Dis-moi ce que tu veux manger...">
+        </div>
+      </div>
+      <div class="validate-row">
+        <button class="btn btn-yes" onclick="validateStep3()">Valider</button>
+      </div>
+    </div>
+
+    <!-- STEP 4 : récap -->
+    <div class="step" id="step4">
+      <span class="emoji-big">💖</span>
+      <div class="eyebrow">C'est officiel</div>
+      <h1>Rendez-vous pris !</h1>
+      <div class="recap-text" id="recapText"></div>
+      <div class="counter" id="envoiStatus"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ⚠️ CONFIGURATION : colle ici l'URL de ton formulaire Formspree
+  // (crée un compte gratuit sur https://formspree.io, crée un formulaire,
+  //  puis remplace la ligne ci-dessous par ton URL, ex : "https://formspree.io/f/abcd1234")
+  const FORMSPREE_ENDPOINT = "https://formspree.io/f/mykqqypj";
+
+  // --- Fond de coeurs flottants ---
+  const heartsContainer = document.getElementById('hearts');
+  const heartEmojis = ['💕','💗','💖','✨'];
+  for(let i=0;i<18;i++){
+    const s = document.createElement('span');
+    s.textContent = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
+    s.style.left = Math.random()*100 + 'vw';
+    s.style.animationDuration = (8 + Math.random()*10) + 's';
+    s.style.animationDelay = (Math.random()*10) + 's';
+    s.style.fontSize = (0.9 + Math.random()*1.4) + 'rem';
+    heartsContainer.appendChild(s);
+  }
+
+  // --- Réponses collectées ---
+  const reponses = {
+    activite: '',
+    date: '',
+    heure: '',
+    plat: '',
+    nbRefus: 0
+  };
+
+  // --- Logique du bouton "Non" fuyant ---
+  const btnNo = document.getElementById('btnNo');
+  const noCounter = document.getElementById('noCounter');
+  const phrasesRelance = [
+    "Essaie encore 😏",
+    "T'es sûre ? 🥺",
+    "Allez, clique sur Oui !",
+    "Le Non se sauve, tu vois bien 😅",
+    "Résiste pas à ton destin 💫"
+  ];
+
+  function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh, padding){
+    return !(
+      ax + aw + padding < bx ||
+      ax - padding > bx + bw ||
+      ay + ah + padding < by ||
+      ay - padding > by + bh
+    );
+  }
+
+  function fleeNo(){
+    reponses.nbRefus++;
+    btnNo.classList.add('fleeing');
+
+    const margin = 16;
+    const padding = 24; // marge de sécurité entre Non et Oui
+    const btnW = btnNo.offsetWidth || 100;
+    const btnH = btnNo.offsetHeight || 50;
+
+    const maxX = Math.max(margin, window.innerWidth - btnW - margin);
+    const maxY = Math.max(margin, window.innerHeight - btnH - margin);
+
+    const btnYes = document.getElementById('btnYes');
+    const yesRect = btnYes.getBoundingClientRect();
+
+    let randX, randY, tries = 0;
+    do {
+      randX = margin + Math.random() * (maxX - margin);
+      randY = margin + Math.random() * (maxY - margin);
+      tries++;
+    } while (
+      rectsOverlap(randX, randY, btnW, btnH, yesRect.left, yesRect.top, yesRect.width, yesRect.height, padding)
+      && tries < 30
+    );
+
+    btnNo.style.left = randX + 'px';
+    btnNo.style.top = randY + 'px';
+
+    noCounter.textContent = phrasesRelance[Math.min(reponses.nbRefus - 1, phrasesRelance.length - 1)];
+  }
+
+  function sayYes(){
+    goToStep('step0','step1');
+  }
+
+  function goToStep(fromId, toId){
+    document.getElementById(fromId).classList.remove('active');
+    document.getElementById(toId).classList.add('active');
+  }
+
+  function toggleAutre(kind){
+    const select = document.getElementById(kind + 'Select');
+    const wrap = document.getElementById(kind + 'AutreWrap');
+    if(select.value === 'autre'){
+      wrap.classList.add('show');
+    } else {
+      wrap.classList.remove('show');
+    }
+  }
+
+  function validateStep1(){
+    const select = document.getElementById('activiteSelect');
+    let value = select.value;
+    if(value === 'autre'){
+      value = document.getElementById('activiteAutre').value.trim();
+    }
+    if(!value){
+      alert("Choisis une idée de date (ou précise la tienne) avant de valider 💕");
+      return;
+    }
+    reponses.activite = value;
+    goToStep('step1','step2');
+  }
+
+  function validateStep2(){
+    const d = document.getElementById('dateInput').value;
+    const h = document.getElementById('heureInput').value;
+    if(!d || !h){
+      alert("Choisis une date ET une heure avant de valider ⏰");
+      return;
+    }
+    reponses.date = d;
+    reponses.heure = h;
+    goToStep('step2','step3');
+  }
+
+  function validateStep3(){
+    const select = document.getElementById('platSelect');
+    let value = select.value;
+    if(value === 'autre'){
+      value = document.getElementById('platAutre').value.trim();
+    }
+    if(!value){
+      alert("Choisis un plat (ou précise ton envie) avant de valider 😋");
+      return;
+    }
+    reponses.plat = value;
+    goToStep('step3','step4');
+    buildRecap();
+  }
+
+  function formatDateFr(iso){
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  }
+
+  function buildRecap(){
+    const dateFr = formatDateFr(reponses.date);
+
+    document.getElementById('recapText').innerHTML =
+      `Alors on se donne rendez-vous le <b>${dateFr}</b> à <b>${reponses.heure}</b>, ` +
+      `pour <b>${reponses.activite}</b>, et on ira manger <b>${reponses.plat}</b> ensemble. ` +
+      `On va passer un moment mémorable 💫`;
+
+    envoyerParEmail(dateFr);
+  }
+
+  function envoyerParEmail(dateFr){
+    const statusEl = document.getElementById('envoiStatus');
+
+    if (FORMSPREE_ENDPOINT.includes('VOTRE_ID_ICI')) {
+      statusEl.textContent = "⚠️ Configure ton URL Formspree dans le code pour recevoir les réponses par email.";
+      return;
+    }
+
+    statusEl.textContent = "Envoi en cours...";
+
+    fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        activite: reponses.activite,
+        date: dateFr,
+        heure: reponses.heure,
+        plat: reponses.plat,
+        nombre_de_refus: reponses.nbRefus,
+        message: `Rendez-vous le ${dateFr} à ${reponses.heure} pour ${reponses.activite}, repas : ${reponses.plat}. (${reponses.nbRefus} refus avant le oui)`
+      })
+    })
+    .then(res => {
+      if (res.ok) {
+        statusEl.textContent = "✅ Réponse envoyée !";
+      } else {
+        statusEl.textContent = "❌ L'envoi a échoué, réessaie plus tard.";
+      }
+    })
+    .catch(() => {
+      statusEl.textContent = "❌ L'envoi a échoué, réessaie plus tard.";
+    });
+  }
+</script>
+
+</body>
+</html>
