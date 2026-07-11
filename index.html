@@ -108,6 +108,9 @@
   }
   #btnNo.fleeing{
     position:fixed;
+    right:auto;
+    bottom:auto;
+    margin:0;
     z-index:50;
     transition: top 0.28s ease, left 0.28s ease;
   }
@@ -317,36 +320,56 @@
 
   function fleeNo(){
     reponses.nbRefus++;
+    const currentRect = btnNo.getBoundingClientRect();
     btnNo.classList.add('fleeing');
+    if(btnNo.parentElement !== document.body){
+      btnNo.style.left = currentRect.left + 'px';
+      btnNo.style.top = currentRect.top + 'px';
+      document.body.appendChild(btnNo);
+    }
 
-    const margin = 16;
+    const margin = 28;
     const padding = 24; // marge de sécurité entre Non et Oui
-    const btnW = btnNo.offsetWidth || 100;
-    const btnH = btnNo.offsetHeight || 50;
+    const btnRect = btnNo.getBoundingClientRect();
+    const btnW = btnRect.width || btnNo.offsetWidth || 100;
+    const btnH = btnRect.height || btnNo.offsetHeight || 50;
+    const viewportW = Math.min(
+      document.documentElement.clientWidth || Infinity,
+      window.innerWidth || Infinity,
+      window.visualViewport?.width || Infinity
+    );
+    const viewportH = Math.min(
+      document.documentElement.clientHeight || Infinity,
+      window.innerHeight || Infinity,
+      window.visualViewport?.height || Infinity
+    );
 
-    const maxX = Math.max(margin, window.innerWidth - btnW - margin);
-    const maxY = Math.max(margin, window.innerHeight - btnH - margin);
+    const minX = margin;
+    const minY = margin;
+    const maxX = Math.max(minX, viewportW - btnW - margin);
+    const maxY = Math.max(minY, viewportH - btnH - margin);
 
     const btnYes = document.getElementById('btnYes');
     const yesRect = btnYes.getBoundingClientRect();
 
     let randX, randY, tries = 0;
     do {
-      randX = margin + Math.random() * (maxX - margin);
-      randY = margin + Math.random() * (maxY - margin);
+      randX = minX + Math.random() * (maxX - minX);
+      randY = minY + Math.random() * (maxY - minY);
       tries++;
     } while (
       rectsOverlap(randX, randY, btnW, btnH, yesRect.left, yesRect.top, yesRect.width, yesRect.height, padding)
       && tries < 30
     );
 
-    btnNo.style.left = randX + 'px';
-    btnNo.style.top = randY + 'px';
+    btnNo.style.left = Math.min(Math.max(randX, minX), maxX) + 'px';
+    btnNo.style.top = Math.min(Math.max(randY, minY), maxY) + 'px';
 
     noCounter.textContent = phrasesRelance[Math.min(reponses.nbRefus - 1, phrasesRelance.length - 1)];
   }
 
   function sayYes(){
+    btnNo.style.display = 'none';
     goToStep('step0','step1');
   }
 
